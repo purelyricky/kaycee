@@ -1,5 +1,5 @@
 /*
- * Developer: [Your Name]
+ * Developer: Madubuko Divine
  * Date: 06/14/2025
  * Description: CC5_Problem2: Cash register for exactly 4 items using while loop
  */

@@ -1,5 +1,5 @@
 /*
- * Developer: [Your Name]
+ * Developer: Madubuko Divine
  * Date: 06/14/2025
  * Description: CC5_Problem4: Acronym builder using String class and tokenizing
  */
