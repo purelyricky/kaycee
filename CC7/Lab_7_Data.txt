@@ -1,0 +1,4 @@
+This is
+a sample of the contents
+of a text file you will need to create
+in advance so that your app can read it.
