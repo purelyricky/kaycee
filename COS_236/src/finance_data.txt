@@ -1,4 +1,5 @@
 # Smart Finance Tracker Data Export
-# Generated: Fri Jul 04 03:05:27 CEST 2025
+# Generated: Fri Jul 04 13:10:45 CEST 2025
 
-300.00|Just Testing Out|Shopping|EXPENSE|RECURRING|2025-07-04 03:05:19
+300.00|Just Testing Out|Shopping|EXPENSE|RECURRING|2025-07-04 13:04:34
+40.00|Billanx|Food & Dining|EXPENSE|RECURRING|2025-07-04 13:10:43
