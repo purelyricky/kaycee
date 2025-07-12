@@ -1,8 +1,5 @@
 /*
- * Developer: Madubuko Divine
- * Date: 06/27/2025
  * Description: LashBiz Pro - Appointment & Income Tracker for Beauty Professionals
- * Resume-worthy project demonstrating GUI development, collections, and business logic
  */
 
  import javax.swing.*;
@@ -40,6 +37,8 @@
      private JCheckBox chkLoyaltyDiscount;
      private JTable tblAppointments;
      private JTextArea taResults;
+     private JTextArea taAnalytics;  // Analytics tab display area
+     private JTextArea taStats;      // Statistics tab display area
      private DefaultTableModel tmAppointments;
      
      // Filter components
@@ -295,10 +294,11 @@
          
          panel.add(pnlControls, BorderLayout.NORTH);
          
-         // Results area
-         JTextArea taAnalytics = new JTextArea(25, 60);
+         // Results area - Fixed to store reference in class field
+         taAnalytics = new JTextArea(25, 60);
          taAnalytics.setEditable(false);
          taAnalytics.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+         taAnalytics.setText("Click 'Calculate Total Income' or 'Generate Detailed Report' to view analytics...");
          JScrollPane scrollAnalytics = new JScrollPane(taAnalytics);
          panel.add(scrollAnalytics, BorderLayout.CENTER);
          
@@ -325,16 +325,16 @@
          btnClearAll = new JButton("Clear All Data");
          btnClearAll.addActionListener(this);
          btnClearAll.setBackground(new Color(244, 67, 54));
-         btnClearAll.setForeground(Color.WHITE);
+         btnClearAll.setForeground(Color.BLACK);
          pnlData.add(btnClearAll);
          
          panel.add(pnlData);
          
-         // Statistics panel
+         // Statistics panel - Fixed to store reference in class field
          JPanel pnlStats = new JPanel(new BorderLayout());
          pnlStats.setBorder(new TitledBorder("Business Statistics"));
          
-         JTextArea taStats = new JTextArea(15, 50);
+         taStats = new JTextArea(15, 50);
          taStats.setEditable(false);
          taStats.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
          JScrollPane scrollStats = new JScrollPane(taStats);
@@ -350,6 +350,7 @@
          fvUpdatePriceForService();
          fvAddToRecentActivities("LashBiz Pro initialized and ready for appointments");
          fvUpdateResultsDisplay("Welcome to LashBiz Pro!\nBook your first appointment to get started.");
+         fvUpdateBusinessStatistics(); // Initialize business statistics display
      }
      
      // Method 8: Main action event handler
@@ -416,6 +417,7 @@
          fvAddToRecentActivities("Appointment booked: " + sClientName + " - " + serviceType + " - " + dfCurrency.format(dPrice));
          fvDisplayAllAppointments();
          fvClearBookingForm();
+         fvUpdateBusinessStatistics(); // Update business statistics after new appointment
          
          // Success message
          String sMessage = "Appointment booked successfully for " + sClientName + "!\n" +
@@ -517,7 +519,7 @@
          }
      }
      
-     // Method 14: Calculate and display total income
+     // Method 14: Calculate and display total income - FIXED
      private void fvCalculateAndDisplayIncome() {
          double dTotalIncome = fdCalculateTotalIncomeRecursive(alAllAppointments, 0, 0.0);
          
@@ -549,7 +551,11 @@
              }
          }
          
-         fvUpdateResultsDisplay(sbIncome.toString());
+         // Update analytics display instead of recent activities
+         fvUpdateAnalyticsDisplay(sbIncome.toString());
+         
+         // Also update recent activities with brief summary
+         fvAddToRecentActivities("Income calculated - Total: " + dfCurrency.format(dTotalIncome));
      }
      
      // Method 15: Recursive income calculation (satisfies recursion requirement)
@@ -564,7 +570,7 @@
                                               pdAccumulator + palAppointments.get(piIndex).fdGetPrice());
      }
      
-     // Method 16: Generate detailed business report
+     // Method 16: Generate detailed business report - FIXED
      private void fvGenerateDetailedReport() {
          StringBuilder sbReport = new StringBuilder();
          sbReport.append("=== LASHBIZ PRO BUSINESS REPORT ===\n");
@@ -591,13 +597,34 @@
              }
          }
          
+         // Service type analysis
+         sbReport.append("\nSERVICE TYPE BREAKDOWN:\n");
+         Map<ServiceType, Integer> hmServiceCount = new HashMap<>();
+         for (Appointment apt : alAllAppointments) {
+             ServiceType service = apt.fsGetService();
+             hmServiceCount.put(service, hmServiceCount.getOrDefault(service, 0) + 1);
+         }
+         
+         for (ServiceType service : ServiceType.values()) {
+             int iCount = hmServiceCount.getOrDefault(service, 0);
+             if (iCount > 0) {
+                 double dPercentage = (double) iCount / alAllAppointments.size() * 100;
+                 sbReport.append(String.format("%-20s: %d appointments (%.1f%%)\n", 
+                     service, iCount, dPercentage));
+             }
+         }
+         
          // Recent activities
          sbReport.append("\nRECENT ACTIVITIES:\n");
          for (String activity : qRecentActivities) {
              sbReport.append("• ").append(activity).append("\n");
          }
          
-         fvUpdateResultsDisplay(sbReport.toString());
+         // Update analytics display instead of recent activities
+         fvUpdateAnalyticsDisplay(sbReport.toString());
+         
+         // Also update recent activities with brief summary
+         fvAddToRecentActivities("Detailed business report generated");
      }
      
      // Method 17: Validate presence of required fields
@@ -693,6 +720,7 @@
              JOptionPane.showMessageDialog(this, 
                  "Data saved successfully to lashbiz_data.txt");
              fvAddToRecentActivities("Data exported to file");
+             fvUpdateBusinessStatistics(); // Update stats after save
              
          } catch (IOException e) {
              JOptionPane.showMessageDialog(this, 
@@ -732,6 +760,7 @@
              
              fvDisplayAllAppointments();
              fvAddToRecentActivities("Loaded " + iLoadedCount + " appointments from file");
+             fvUpdateBusinessStatistics(); // Update stats after load
              JOptionPane.showMessageDialog(this, 
                  "Loaded " + iLoadedCount + " appointments successfully");
              
@@ -766,6 +795,8 @@
              tmAppointments.setRowCount(0);
              fvClearBookingForm();
              fvUpdateResultsDisplay("All data cleared. Ready for new appointments.");
+             fvUpdateAnalyticsDisplay("All data cleared. Analytics will appear when data is available.");
+             fvUpdateBusinessStatistics(); // Update stats after clear
              
              JOptionPane.showMessageDialog(this, "All appointment data has been cleared.");
          }
@@ -807,5 +838,77 @@
      private void fvUpdateResultsDisplay(String psText) {
          taResults.setText(psText);
          taResults.setCaretPosition(0);
+     }
+     
+     // NEW Method 26: Update analytics display area
+     private void fvUpdateAnalyticsDisplay(String psText) {
+         taAnalytics.setText(psText);
+         taAnalytics.setCaretPosition(0);
+     }
+     
+     // NEW Method 27: Update business statistics display
+     private void fvUpdateBusinessStatistics() {
+         StringBuilder sbStats = new StringBuilder();
+         sbStats.append("=== BUSINESS STATISTICS ===\n");
+         sbStats.append("Last Updated: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())).append("\n\n");
+         
+         if (alAllAppointments.isEmpty()) {
+             sbStats.append("No appointment data available yet.\n");
+             sbStats.append("Book your first appointment to see statistics here!\n");
+         } else {
+             // Basic statistics
+             double dTotalRevenue = fdCalculateTotalIncomeRecursive(alAllAppointments, 0, 0.0);
+             sbStats.append("OVERVIEW:\n");
+             sbStats.append("Total Clients: ").append(hsClientNames.size()).append("\n");
+             sbStats.append("Total Appointments: ").append(alAllAppointments.size()).append("\n");
+             sbStats.append("Total Revenue: ").append(dfCurrency.format(dTotalRevenue)).append("\n");
+             sbStats.append("Average Revenue per Appointment: ").append(dfCurrency.format(dTotalRevenue / alAllAppointments.size())).append("\n");
+             sbStats.append("Average Appointments per Client: ").append(String.format("%.1f", (double) alAllAppointments.size() / hsClientNames.size())).append("\n\n");
+             
+             // Loyalty statistics
+             sbStats.append("LOYALTY PROGRAM:\n");
+             int iVipClients = 0;
+             for (Integer visits : hmClientLoyaltyCount.values()) {
+                 if (visits >= LOYALTY_THRESHOLD) {
+                     iVipClients++;
+                 }
+             }
+             sbStats.append("VIP Clients (5+ visits): ").append(iVipClients).append("\n");
+             sbStats.append("Regular Clients: ").append(hsClientNames.size() - iVipClients).append("\n");
+             if (hsClientNames.size() > 0) {
+                 sbStats.append("VIP Client Percentage: ").append(String.format("%.1f%%", (double) iVipClients / hsClientNames.size() * 100)).append("\n");
+             }
+             sbStats.append("\n");
+             
+             // Service popularity
+             sbStats.append("MOST POPULAR SERVICES:\n");
+             Map<ServiceType, Integer> hmServiceCount = new HashMap<>();
+             for (Appointment apt : alAllAppointments) {
+                 ServiceType service = apt.fsGetService();
+                 hmServiceCount.put(service, hmServiceCount.getOrDefault(service, 0) + 1);
+             }
+             
+             hmServiceCount.entrySet().stream()
+                 .sorted(Map.Entry.<ServiceType, Integer>comparingByValue().reversed())
+                 .limit(3)
+                 .forEach(entry -> {
+                     double dPercentage = (double) entry.getValue() / alAllAppointments.size() * 100;
+                     sbStats.append(String.format("%-20s: %d appointments (%.1f%%)\n", 
+                         entry.getKey(), entry.getValue(), dPercentage));
+                 });
+             
+             sbStats.append("\n");
+             
+             // Top clients
+             sbStats.append("TOP CLIENTS:\n");
+             hmClientLoyaltyCount.entrySet().stream()
+                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                 .limit(3)
+                 .forEach(entry -> sbStats.append(String.format("%-20s: %d visits\n", 
+                     entry.getKey(), entry.getValue())));
+         }
+         
+         taStats.setText(sbStats.toString());
+         taStats.setCaretPosition(0);
      }
  }

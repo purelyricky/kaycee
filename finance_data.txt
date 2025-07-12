@@ -1,0 +1,4 @@
+# Smart Finance Tracker Data Export
+# Generated: Sat Jul 12 22:48:54 CEST 2025
+
+4000.00|I will add later|Shopping|EXPENSE|RECURRING|2025-07-12 22:48:16
