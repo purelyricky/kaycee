@@ -1,0 +1,22 @@
+PROBLEM 3 PLANNING DOCUMENT: Array Shifting
+
+MAIN COMPONENTS:
+1. Array Declaration & Population
+   - Create array with specified values: {47, 93, 108, 173, 4, 38, 62, 87, 19, 11}
+   - Display initial "Native Order"
+
+2. User Interface (Captive Menu)
+   - Loop until user enters 'Q'
+   - Validate input: L, R, or Q only
+   - Display error for invalid input
+
+3. Methods Needed:
+   - fvDisplayArray(array, caption) - shows array with label
+   - fvShiftArray(array, direction) - performs left or right shift
+
+4. Shifting Logic:
+   - Left Shift: Move first element to end, shift others left
+   - Right Shift: Move last element to beginning, shift others right
+
+5. Flow:
+   Display Native → Menu Loop → Process Choice → Display Result → Repeat

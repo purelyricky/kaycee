@@ -1,0 +1,26 @@
+PROBLEM 4 PLANNING DOCUMENT: Bubble Sort
+
+MAIN COMPONENTS:
+1. Array Management
+   - Create array with user-defined size
+   - Populate with random integers in specified range
+   - Display array before and after sorting
+
+2. User Interface (Captive Menu)
+   - Options: A (Ascending), D (Descending), Q (Quit)
+   - Input validation and error handling
+
+3. Methods Needed:
+   - fvPopulateArray(array, min, max) - fills with random numbers
+   - fvDisplayArray(array, caption) - shows array with label
+   - fiBubbleSortAscending(array) - sorts ascending, returns swap count
+   - fiBubbleSortDescending(array) - sorts descending, returns swap count
+
+4. Bubble Sort Algorithm:
+   - Nested loops: outer for passes, inner for comparisons
+   - Compare adjacent elements and swap if needed
+   - Count all swaps/interchanges
+   - Optimize with early termination if no swaps occur
+
+5. Flow:
+   Populate → Display Native → Menu → Sort → Display Result → Show Count → Repeat
